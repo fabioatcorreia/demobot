@@ -1,0 +1,17 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "wit bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fábio Correia",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.14.0",
+    "pdf2json": "^1.1.7",
+    "restify": "^6.3.4"
+  }
+}
