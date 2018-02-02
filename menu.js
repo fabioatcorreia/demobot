@@ -1,12 +1,12 @@
 const https = require('https');
 const constants = require('./constants');
+const fs = require('fs');
 const PDFParser = require('pdf2json');
 
 module.exports = {
     getTodayMenu() {
         //'2018-01-03T03:24:00'
         let week = getWeek(new Date());
-
         return getMenuByDateInterval(week.monday, week.friday);
     },
     getWeekMenu() {
@@ -14,13 +14,12 @@ module.exports = {
     }
 }
 
-function getMonth(date) {
-    const month = date.getMonth() + 1;
-    return (month < 10 ? '0' : '') + month;
+function formatDigits(digit) {
+    return (digit < 10 ? '0' : '') + digit;
 }
 
 function formatDate(date) {
-    return `${date.getDate()}-${getMonth(date)}-${date.getFullYear()}`;
+    return `${formatDigits(date.getDate())}-${formatDigits(date.getMonth() + 1)}-${date.getFullYear()}`;
 }
 
 function getWeek(date) {
@@ -29,7 +28,7 @@ function getWeek(date) {
     let monday = new Date();
     monday.setDate(date.getDate() - currentWeekDay + 1);
 
-    let friday = new Date()
+    let friday = new Date(monday.getTime());
     friday.setDate(monday.getDate() + 4);
 
     return {
@@ -40,12 +39,13 @@ function getWeek(date) {
 
 function getMenuByDateInterval(startDate, endDate = startDate) {
     return new Promise((resolve, reject) => {
-        const month = getMonth(startDate);
+        const month = formatDigits(startDate.getMonth() + 1);
         const startDateFormatted = formatDate(startDate);
         const endDateFormatted = formatDate(endDate);
 
         const menuURL = constants.MENU_URL.format(startDate.getFullYear(), month, startDateFormatted, endDateFormatted);
 
+        var file = fs.createWriteStream("test.pdf");
         https.get(menuURL, (response) => {
             let chunks = [];
             let body = "";
@@ -54,10 +54,13 @@ function getMenuByDateInterval(startDate, endDate = startDate) {
                 body += data;
             });
 
+            response.pipe(file);
+
             response.on('end', () => {
-                let file = new Buffer.concat(chunks).toString('base64');
-                let x = parsePDF(file);
-                resolve(x);
+                // let file = new Buffer.concat(chunks).toString('base64');
+                // let x = parsePDF(file);
+                file.close(parsePDF());
+                resolve();
             });
 
         }).on("error", (errorMessage) => {
@@ -66,9 +69,41 @@ function getMenuByDateInterval(startDate, endDate = startDate) {
     });
 }
 
-function parsePDF(pdfBuffer) {
+function parsePDF() {
     // pdfBuffer contains the file content 
     let pdfParser = new PDFParser();
+    pdfParser.on("pdfParser_dataError", errData => console.error(errData.parserError));
+    pdfParser.on("pdfParser_dataReady", pdfData => {
+        getPdfText(pdfParser.getMergedTextBlocksIfNeeded())
+    });
 
-    return pdfParser.parseBuffer(pdfBuffer);
+    pdfParser.loadPDF("./test.pdf");
+
+    // return pdfParser.parseBuffer(pdfBuffer);
+}
+
+function getPdfText(pdfJson) {
+    let texts = [];
+    if (pdfJson && pdfJson.formImage) {
+        for (const node of pdfJson.formImage.Pages) {
+            texts.push.apply(texts, node.Texts.map(elem => decodeURIComponent(elem.R.reduce((text, current) => text + current.T, ''))));
+        }
+    }
+
+    const pos = [];
+
+    for (let i = 0; i < texts.length; i++) {
+        const text = texts[i];
+        if (text === 'SOPA') {
+            pos.push(i - 1);
+        } else if (text.startsWith('Glúten')) {
+            pos.push(i);
+        }
+    }
+
+    const menu = [];
+
+    for (let index = 0; index < pos.length - 1; index++) {
+        menu.push(texts.slice(pos[index], pos[index + 1]).reduce((text, current) => text + current, ''));
+    }
 }
