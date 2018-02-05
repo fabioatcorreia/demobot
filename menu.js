@@ -5,12 +5,17 @@ const PDFParser = require('pdf2json');
 
 module.exports = {
     getTodayMenu() {
-        //'2018-01-03T03:24:00'
-        let week = getWeek(new Date());
-        return getMenuByDateInterval(week.monday, week.friday);
+        return new Promise((resolve, reject) => {
+            const currentDate = new Date();
+            let week = getWeek(currentDate);
+            getMenuByDateInterval(week.monday, week.friday).then(menu => {
+                resolve(JSON.stringify(menu[currentDate.getDay() - 1]));
+            })
+        });
     },
     getWeekMenu() {
-        return getMenuByDateInterval();
+        let week = getWeek(new Date());
+        return getMenuByDateInterval(week.monday, week.friday);
     }
 }
 
@@ -59,8 +64,8 @@ function getMenuByDateInterval(startDate, endDate = startDate) {
             response.on('end', () => {
                 // let file = new Buffer.concat(chunks).toString('base64');
                 // let x = parsePDF(file);
-                file.close(parsePDF());
-                resolve();
+                file.close();
+                parsePDF().then(menu => resolve(menu));
             });
 
         }).on("error", (errorMessage) => {
@@ -70,15 +75,18 @@ function getMenuByDateInterval(startDate, endDate = startDate) {
 }
 
 function parsePDF() {
-    // pdfBuffer contains the file content 
-    let pdfParser = new PDFParser();
-    pdfParser.on("pdfParser_dataError", errData => console.error(errData.parserError));
-    pdfParser.on("pdfParser_dataReady", pdfData => {
-        getPdfText(pdfParser.getMergedTextBlocksIfNeeded())
+    return new Promise((resolve, reject) => {
+        // pdfBuffer contains the file content 
+        let pdfParser = new PDFParser();
+        pdfParser.on("pdfParser_dataError", errData => console.error(errData.parserError));
+        pdfParser.on("pdfParser_dataReady", pdfData => {
+            let txt = getPdfText(pdfParser.getMergedTextBlocksIfNeeded());
+            resolve(txt);
+        });
+
+        pdfParser.loadPDF("./test.pdf");
+
     });
-
-    pdfParser.loadPDF("./test.pdf");
-
     // return pdfParser.parseBuffer(pdfBuffer);
 }
 
@@ -102,8 +110,26 @@ function getPdfText(pdfJson) {
     }
 
     const menu = [];
-
     for (let index = 0; index < pos.length - 1; index++) {
-        menu.push(texts.slice(pos[index], pos[index + 1]).reduce((text, current) => text + current, ''));
+        menu.push(parseDayMenu(texts.slice(pos[index], pos[index + 1]).reduce((text, current) => text + current, ''), index));
+    }
+
+    return menu;
+}
+
+function parseDayMenu(text, weekDay) {
+    const weekDays = [
+        'SEGUNDA',
+        'TERÇA',
+        'QUARTA',
+        'QUINTA',
+        'SEXTA'
+    ];
+
+    return {
+        sopa: text.substring(0, text.indexOf('SOPA')),
+        carne: text.substring(text.indexOf('CARNE') + 5, text.indexOf(weekDays[weekDay])),
+        peixe: text.substring(text.indexOf('PEIXE') + 5, text.indexOf('VEGETARIANO')),
+        vegetariano: text.substring(text.indexOf('VEGETARIANO') + 11)
     }
 }

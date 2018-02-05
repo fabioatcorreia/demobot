@@ -11,8 +11,6 @@ String.prototype.format = String.prototype.format || function () {
     return a
 }
 
-menu.getTodayMenu();
-
 // Setup Restify Server
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 8080, function () {
@@ -37,6 +35,8 @@ const bot = new builder.UniversalBot(connector, function (session) {
         session.send(`Hey, ${session.message.user.name}! Whenever you need I can 'help' you...`);
     } else if (session.message.text.toLowerCase().includes('help')) {
         showOptions(session);
+    } else if (session.message.text.toLowerCase().includes('menu')) {
+        menu.getTodayMenu().then(ementa => session.send(ementa));
     } else {
         session.send(`Sorry I didn't understand you...`);
     }
