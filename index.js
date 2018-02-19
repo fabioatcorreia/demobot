@@ -73,7 +73,7 @@ bot.on('conversationUpdate', function (message) {
 //Bot on
 bot.on('contactRelationUpdate', function (message) {
     if (message.action === 'add') {
-        const sender = getSender(session.message);
+        const sender = getSender(message);
 
         var reply = new builder.Message()
             .address(message.address)
