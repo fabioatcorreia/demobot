@@ -5,15 +5,15 @@ const menu = require('./menu');
 
 String.prototype.format = String.prototype.format || function () {
     a = this;
-    for (k in arguments) {
-        a = a.replace("{" + k + "}", arguments[k])
+    for (let k in arguments) {
+        a = a.replace("{" + k + "}", arguments[k]);
     }
-    return a
+    return a;
 }
 
 // Setup Restify Server
 const server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 8080, function () {
+server.listen(process.env.port || 8080, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
 
@@ -21,8 +21,8 @@ server.listen(process.env.port || process.env.PORT || 8080, function () {
 
 // Create chat connector for communicating with the Bot Framework Service
 const connector = new builder.ChatConnector({
-    appId: process.env.MicrosoftAppId || "db943d81-2f39-4584-bd53-597cf8b8671a",
-    appPassword: process.env.MicrosoftAppPassword || "shnshVVROD88-lcNH046^?$"
+    appId: process.env.MicrosoftAppId || "00f6afa1-848b-45fe-b394-7c401fa8be59",
+    appPassword: process.env.MicrosoftAppPassword || "xkQDVVZ05$@|dqquxMV391}"
 });
 
 // Listen for messages from users 
@@ -38,7 +38,35 @@ const bot = new builder.UniversalBot(connector, function (session) {
     } else if (session.message.text.toLowerCase().includes('menu')) {
         menu.getTodayMenu().then(ementa => session.send(ementa));
     } else {
-        session.send(`Sorry I didn't understand you...`);
+        session.send(`Sorry I didn't understand you...
+        Try help for all the available options`);
+    }
+});
+
+bot.on('conversationUpdate', function (message) {
+    if (message.membersAdded && message.membersAdded.length > 0) {
+        // Say hello when joining conversation
+        if (message.membersAdded.find(member => member.id === message.address.bot.id)) {
+            // const isGroup
+
+            const reply = new builder.Message()
+                .address(message.address)
+                .text('Hello');
+            bot.send(reply);
+        }
+    } else if (message.membersRemoved) {
+        // See if bot was removed
+        var botId = message.address.bot.id;
+        for (var i = 0; i < message.membersRemoved.length; i++) {
+            if (message.membersRemoved[i].id === botId) {
+                // Say goodbye
+                var reply = new builder.Message()
+                    .address(message.address)
+                    .text("Goodbye");
+                bot.send(reply);
+                break;
+            }
+        }
     }
 });
 
@@ -57,9 +85,9 @@ bot.on('contactRelationUpdate', function (message) {
 });
 
 function showOptions(session) {
-    session.send(`Available options: 
-        \n help: Currently available options
-        `);
+    session.send(`Available options:  
+    help: Currently available options  
+    menu: Current day menu`);
     // menu    : Show today menu
     // weekMenu: Show current week menu
 }

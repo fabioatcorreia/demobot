@@ -3,13 +3,22 @@ const constants = require('./constants');
 const fs = require('fs');
 const PDFParser = require('pdf2json');
 
+const menuPDF = "menu.pdf";
+
 module.exports = {
     getTodayMenu() {
         return new Promise((resolve, reject) => {
             const currentDate = new Date();
             let week = getWeek(currentDate);
             getMenuByDateInterval(week.monday, week.friday).then(menu => {
-                resolve(JSON.stringify(menu[currentDate.getDay() - 1]));
+                const currentDayMenu = menu[currentDate.getDay() - 1];
+                const text = `Menu ${currentDate.toLocaleDateString()}:  
+                Sopa: ${currentDayMenu.sopa}  
+                Carne: ${currentDayMenu.carne}  
+                Peixe: ${currentDayMenu.peixe}  
+                Vegetariano: ${currentDayMenu.vegetariano}`;
+
+                resolve(text);
             })
         });
     },
@@ -50,7 +59,7 @@ function getMenuByDateInterval(startDate, endDate = startDate) {
 
         const menuURL = constants.MENU_URL.format(startDate.getFullYear(), month, startDateFormatted, endDateFormatted);
 
-        var file = fs.createWriteStream("test.pdf");
+        var file = fs.createWriteStream(menuPDF);
         https.get(menuURL, (response) => {
             let chunks = [];
             let body = "";
@@ -64,8 +73,7 @@ function getMenuByDateInterval(startDate, endDate = startDate) {
             response.on('end', () => {
                 // let file = new Buffer.concat(chunks).toString('base64');
                 // let x = parsePDF(file);
-                file.close();
-                parsePDF().then(menu => resolve(menu));
+                file.close(() => parsePDF().then(menu => resolve(menu)));
             });
 
         }).on("error", (errorMessage) => {
@@ -84,7 +92,7 @@ function parsePDF() {
             resolve(txt);
         });
 
-        pdfParser.loadPDF("./test.pdf");
+        pdfParser.loadPDF("./" + menuPDF);
 
     });
     // return pdfParser.parseBuffer(pdfBuffer);
