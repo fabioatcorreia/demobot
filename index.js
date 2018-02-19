@@ -32,7 +32,7 @@ server.post('/api/messages', connector.listen());
 const bot = new builder.UniversalBot(connector, function (session) {
     if (session.message.text.toLowerCase().includes('hello')) {
         const sender = getSender(session.message);
-        session.send(`Hey, ${session.message.user.name}! Whenever you need I can 'help' you...`);
+        session.send(`Hey! Whenever you need I can 'help' you...`);
     } else if (session.message.text.toLowerCase().includes('help')) {
         showOptions(session);
     } else if (session.message.text.toLowerCase().includes('menu')) {
