@@ -1,0 +1,8 @@
+https://docs.google.com/viewerng/viewer?url=http://assicanti.pt/wp-content/uploads/2018/01/Ementa-uptec-15-01-2018-a-19-01-2018.pdf
+https://assicanti.pt/wp-content/uploads/2018/01/Ementa-uptec-22-01-2018-a-26-01-2018.pdf
+
+currentMonth => startDate Month?
+
+`https://docs.google.com/viewerng/viewer?url=http://assicanti.pt/wp-content/uploads/${currentYear}/${currentMonth}/Ementa-uptec-${startDate}-a-${endDate}.pdf`
+
+"EMENTA Cafetaria UPTECSemana de 22/01/2018a 26/01/2018Creme de abóbora e cenouraSOPA(30% batata,10%cebola, 30% cenoura, 30% abóbora)CARNEAlmôndegas com espargueteSEGUNDAPEIXEDouradinhos de peixe com arroz de legumesVEGETARIANOTortilha de tomate e queijoNabiças e feijãoSOPA(40% batata, 10% cebola, 20% cenoura, 10% feijão, 20% nabiças)CARNE C oxinhas de frango panadas c/mostarda no fornoTERÇAPEIXEAçorda de mariscoVEGETARIANOCrepe de vegetaisRepolho e cenouraSOPA(40% batata, 30% cenoura, 10% cebola, 20, repolho)CARNEPernil assado à BairradaQUARTAPEIXEMeia desfeita (salada de bacalhau com grão)VEGETARIANOEstufado de legumes com carilCreme de espinafresSOPA(40% batata, 20% cenoura, 10% cebola, 10% couve flor, 20% espinafres)CARNEAlheira de Mirandela com ovoQUINTAPEIXEFusili com atum e delícias do marVEGETARIANOGratin de tofu, alho francês e batataMinestrone SOPA(30% batata, 20% cenoura, 10% cebola, 10%feijão, 20% ervilhas, 10% massinhas)CARNEFeijoada à PortuguesaSEXTAPEIXEPescada com broa e grelosVEGETARIANOCachorro especial com batata (mini)Glúten     Crustáceos        Ovos       Pescado       Amendoins      Soja     LácteosFrutos casca      Aipo       Mostarda     Sementes      Dióxido       Moluscos   Tremoços           Rija                      sésamo       enxofre e                    sulfitos            "
