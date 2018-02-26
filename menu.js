@@ -58,6 +58,8 @@ function getMenuByDateInterval(startDate, endDate = startDate) {
         const endDateFormatted = formatDate(endDate);
 
         const menuURL = constants.MENU_URL.format(startDate.getFullYear(), month, startDateFormatted, endDateFormatted);
+        
+        console.log(menuURL);
 
         var file = fs.createWriteStream(menuPDF);
         https.get(menuURL, (response) => {
