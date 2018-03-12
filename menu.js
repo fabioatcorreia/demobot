@@ -12,7 +12,7 @@ module.exports = {
             let week = getWeek(currentDate);
             getMenuByDateInterval(week.monday, week.friday).then(menu => {
                 const currentDayMenu = menu[currentDate.getDay() - 1];
-                const text = `Menu ${currentDate.toLocaleDateString()}:  
+                const text = `Menu ${currentDate.toLocaleDateString('pt-PT')}:  
                 Sopa: ${currentDayMenu.sopa}  
                 Carne: ${currentDayMenu.carne}  
                 Peixe: ${currentDayMenu.peixe}  
