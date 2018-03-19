@@ -61,7 +61,7 @@ function getMenuByDateInterval(startDate, endDate = startDate) {
         
         console.log(menuURL);
 
-        var file = fs.createWriteStream(menuPDF);
+        var file = fs.createWriteStream(menuPDF, {flags: 'w'});
         https.get(menuURL, (response) => {
             let chunks = [];
             let body = "";
